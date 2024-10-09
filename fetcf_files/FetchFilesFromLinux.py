@@ -51,7 +51,8 @@ try:
         ssh.connect(linux_hostname, linux_port, linux_username, linux_password)
 
         # 目标文件夹路径
-        source_path = '/dazu/www/zssite/uptownfile'
+        source_path1 = '/dazu/www/zssite/uptownfile-bak'
+        source_path2 = '/dazu/www/zssite/uptownfile'
         target_path = '/target-dir/' + itemId
 
         # 确保目标目录存在
@@ -61,16 +62,34 @@ try:
         # 创建SCP客户端
         scp = SCPClient(ssh.get_transport())
         print('*' * 40)
+        failedFileNames = ''
         # 复制文件
         for file_tuple in results:
             file_name = file_tuple[0]
-            source_file = f'{source_path}/{file_name}'
+            source_file1 = f'{source_path1}/{file_name}'
             target_file = f'{target_path}/{file_name}'
             try:
-                scp.get(source_file, target_file)
+                scp.get(source_file1, target_file)
                 print(f'已拷贝文件：{file_name}')
+                # 复制文件异常时，收集没有找到的文件名，到另外一个目录查询
             except Exception as e:
-                print(f'****** 未找到文件 ******：{file_name}')
+                failedFileNames = failedFileNames + file_name + '@@'
+
+
+        # 尝试从第二个目录中获取数据
+        if len(failedFileNames) > 1:
+            failedFileNameList = failedFileNames.split('@@')
+            for itemFailedFileName in failedFileNameList:
+                # 剔除文件格式有误的文件
+                if '.' not in itemFailedFileName:
+                    continue
+                source_file2 = f'{source_path2}/{itemFailedFileName}'
+                target_file = f'{target_path}/{itemFailedFileName}'
+                try:
+                    scp.get(source_file2, target_file)
+                    print(f'已拷贝文件：{itemFailedFileName}')
+                except Exception as e:
+                    print(f'****** 未找到文件 ******：{itemFailedFileName}')
         print(f'文件下载完成,目录：{target_path}')
         # 关闭连接
         scp.close()

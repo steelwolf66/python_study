@@ -13,7 +13,7 @@ for i in range(len(str)):
     print(f'{str[i]},i:{i}')
 
 # 切片 访问序列中元素的一种方法
-# 序列[start:end:step]  [) 开始下标，结束下标
+# 序列[start:end:step]  [) 开始下标，结束下标，步长默认为1
 # start：切片的开始索引（包含） end:切片结束的索引（不包含） step:步长，默认为1,指从开始索引后，每次跳转到加上步长的索引后的数据
 print(str[0:5:2])  # 即获取 0,2,4 的数据切片
 print(str[0:5])  # 省略步长
@@ -32,3 +32,4 @@ print(outOfControlStr[-1:9:1])  # 没有数据，因为下标为9，是不包括
 print(outOfControlStr[9:9:1])  # 等价于上一个表达式
 print(outOfControlStr[-1:10:1])  # 有数据， 开始下标和结束下标为[)区间 ，在这里，可以转化为 [9,10) ,所以，9可以被打印
 print(outOfControlStr[-1:-8:-1])  # 有正常数据，反向打印
+print(outOfControlStr[-1::-1])  # 省略写法，反向打印
