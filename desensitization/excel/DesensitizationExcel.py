@@ -2,6 +2,8 @@ import os
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
+
+
 # excel批量脱敏
 
 def desensitize_name(name):
@@ -34,18 +36,18 @@ def desensitize_bank_card(card_number):
     return card_str[:6] + '*' * (len(card_str) - 10) + card_str[-4:]
 
 
-def process_excel_file(input_path, output_path, columns_config):
+def process_excel_file(input_path, output_path, columnsConfig):
     """
     处理单个Excel文件
     :param input_path: 输入文件路径
     :param output_path: 输出文件路径
-    :param columns_config: 列配置，格式为 {'列名': '脱敏类型'}
+    :param columnsConfig: 列配置，格式为 {'列名': '脱敏类型'}
     """
     # 读取Excel文件
     df = pd.read_excel(input_path)
 
     # 应用脱敏规则
-    for column, desensitize_type in columns_config.items():
+    for column, desensitize_type in columnsConfig.items():
         if column in df.columns:
             if desensitize_type == 'name':
                 df[column] = df[column].apply(desensitize_name)
@@ -76,25 +78,25 @@ def process_excel_file(input_path, output_path, columns_config):
         df.to_excel(output_path, index=False)
 
 
-def batch_process_excel(input_folder, output_folder, columns_config):
+def batch_process_excel(inputFolder, outputFolder, columnsConfig):
     """
     批量处理Excel文件
-    :param input_folder: 输入文件夹路径
-    :param output_folder: 输出文件夹路径
-    :param columns_config: 列配置，格式为 {'列名': '脱敏类型'}
+    :param inputFolder: 输入文件夹路径
+    :param outputFolder: 输出文件夹路径
+    :param columnsConfig: 列配置，格式为 {'列名': '脱敏类型'}
     """
     # 确保输出文件夹存在
-    os.makedirs(output_folder, exist_ok=True)
+    os.makedirs(outputFolder, exist_ok=True)
 
     # 遍历输入文件夹中的所有Excel文件
-    for filename in os.listdir(input_folder):
+    for filename in os.listdir(inputFolder):
         if filename.endswith(('.xls', '.xlsx')):
-            input_path = os.path.join(input_folder, filename)
-            output_path = os.path.join(output_folder, filename)
+            input_path = os.path.join(inputFolder, filename)
+            output_path = os.path.join(outputFolder, filename)
 
             print(f"正在处理文件: {filename}")
             try:
-                process_excel_file(input_path, output_path, columns_config)
+                process_excel_file(input_path, output_path, columnsConfig)
                 print(f"文件处理完成，已保存到: {output_path}")
             except Exception as e:
                 print(f"处理文件 {filename} 时出错: {str(e)}")
